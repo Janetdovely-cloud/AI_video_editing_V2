@@ -477,7 +477,7 @@ body.editing [data-islot]{outline:2px dashed color-mix(in srgb,var(--t-gold) 80%
 .endcard .credit-name{display:inline;margin:0;font-size:21px;line-height:1;color:color-mix(in srgb,var(--stage-ink) 78%,transparent);-webkit-text-stroke:.8px currentColor}
 @media (max-width:600px){.endcard .credit{justify-self:start}}
 /* ===== 自訂游標（不靠程式也能顯示） ===== */
-@media (any-pointer: fine){html{cursor:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Cg fill='none' stroke='%23FACC15' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='M3 9V3h6M19 3h6v6M25 19v6h-6M9 25H3v-6'/%3E%3C/g%3E%3Ccircle cx='14' cy='14' r='2.6' fill='%23EF5D60' stroke='%23fff' stroke-width='1'/%3E%3C/svg%3E") 14 14,crosshair}a,button,summary,select,[role="tab"],[role="button"],.track[data-go],.layer[data-go],label[for]{cursor:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Crect x='12.6' y='2' width='2.8' height='24' rx='1.2' fill='%23FACC15' stroke='%23141925' stroke-width='1'/%3E%3Cpath d='M8 2h12l-6 7z' fill='%23FACC15' stroke='%23141925' stroke-width='1' stroke-linejoin='round'/%3E%3C/svg%3E") 14 2,pointer}input,textarea,[contenteditable="true"],body.editing [data-ekey]{cursor:text}}
+@media all{html{cursor:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Cg fill='none' stroke='%23FACC15' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='M3 9V3h6M19 3h6v6M25 19v6h-6M9 25H3v-6'/%3E%3C/g%3E%3Ccircle cx='14' cy='14' r='2.6' fill='%23EF5D60' stroke='%23fff' stroke-width='1'/%3E%3C/svg%3E") 14 14,crosshair}a,button,summary,select,[role="tab"],[role="button"],.track[data-go],.layer[data-go],label[for]{cursor:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Crect x='12.6' y='2' width='2.8' height='24' rx='1.2' fill='%23FACC15' stroke='%23141925' stroke-width='1'/%3E%3Cpath d='M8 2h12l-6 7z' fill='%23FACC15' stroke='%23141925' stroke-width='1' stroke-linejoin='round'/%3E%3C/svg%3E") 14 2,pointer}input,textarea,[contenteditable="true"],body.editing [data-ekey]{cursor:text}}
 /* ===== 一鍵回到開頭 ===== */
 .totop{position:fixed;right:20px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:55;width:54px;height:54px;border-radius:50%;border:0;padding:0;cursor:pointer;
   background:conic-gradient(var(--t-gold) calc(var(--p,0)*1turn),var(--stage-3) 0);box-shadow:0 6px 18px rgba(0,0,0,.3);
@@ -1390,7 +1390,6 @@ python -I -X utf8 tools\gemini_chrome.py prompt 輸出\影片名</pre>
 
   /* ---------- 游標跟隨 ---------- */
   (function(){
-    if(!window.matchMedia||!matchMedia('(any-hover: hover) and (any-pointer: fine)').matches)return;
     var ring=document.createElement('div');ring.className='cursor-ring';ring.setAttribute('aria-hidden','true');
     var lbl=document.createElement('span');ring.appendChild(lbl);document.body.appendChild(ring);
     var x=-100,y=-100,rx=x,ry=y,running=false,cur=null;
@@ -1400,6 +1399,7 @@ python -I -X utf8 tools\gemini_chrome.py prompt 輸出\影片名</pre>
       if(Math.abs(x-rx)>.3||Math.abs(y-ry)>.3)requestAnimationFrame(loop);else running=false;
     }
     window.addEventListener('mousemove',function(e){
+      if(performance.now()-(window.__lastTouch||-1e4)<800)return;
       x=e.clientX;y=e.clientY;
       if(!ring.classList.contains('on')){rx=x;ry=y;ring.classList.add('on')}
       if(!running){running=true;requestAnimationFrame(loop)}
@@ -1444,7 +1444,6 @@ python -I -X utf8 tools\gemini_chrome.py prompt 輸出\影片名</pre>
 
   /* ---------- 游標的剪輯效果：時間碼、剪刀分割、素材拖尾 ---------- */
   (function(){
-    if(!window.matchMedia||!matchMedia('(any-hover: hover) and (any-pointer: fine)').matches)return;
     var tcEl=document.createElement('div');tcEl.className='cursor-tc';tcEl.setAttribute('aria-hidden','true');document.body.appendChild(tcEl);
     var FPS=60,TOTAL=446.2;
     function tcOf(){
@@ -1456,6 +1455,7 @@ python -I -X utf8 tools\gemini_chrome.py prompt 輸出\影片名</pre>
     var COLORS=['var(--t-video)','var(--t-text)','var(--t-image)','var(--t-audio)'],ci=0,lx=null,ly=null,lastT=0;
     function hotAt(e){return e.target.closest&&e.target.closest('a,button,summary,input,textarea,select,[role="tab"],[data-go],[contenteditable="true"]')}
     window.addEventListener('mousemove',function(e){
+      if(performance.now()-(window.__lastTouch||-1e4)<800)return;
       var x=e.clientX,y=e.clientY,hot=hotAt(e);
       tcEl.textContent=tcOf();
       tcEl.style.transform='translate('+(x+18)+'px,'+(y+16)+'px)';
